@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- 
+    Color Palette: Energetic & Playful (#FF6B6B, #FFD166, #06D6A0, #118AB2, #073B4C)
+    Narrative Plan: 
+    1. Hook: KPIs & Polarized Sentiment (Donut)
+    2. Distribution: Show the 1-star vs 5-star divide (Bar)
+    3. Time Analysis: Pinpoint the 2017-10 crisis (Line)
+    4. Root Cause: Rank Topics by Sentiment (Horizontal Bar)
+    5. Themes: Show Keywords for Pain Points vs. Strengths (HTML Cards)
+    6. Solution: Outline the RM Playbooks (HTML Cards)
+    
+    Visualization Choices:
+    - Sentiment Breakdown: Goal: Inform -> Donut Chart (Chart.js)
+    - Star Distribution: Goal: Compare -> Bar Chart (Chart.js)
+    - Sentiment Over Time: Goal: Change -> Line Chart (Chart.js)
+    - Topic Sentiment Rank: Goal: Rank -> Horizontal Bar Chart (Chart.js)
+    - Keyword Themes: Goal: Organize -> HTML/CSS List (No SVG)
+    - Playbooks: Goal: Organize/Flow -> HTML/CSS Cards (No SVG/Mermaid)
+
+    Confirmed: NO SVG and NO Mermaid JS used. All charts are Canvas-based.
+    -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice of the Customer: Banking Sentiment Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .chart-container-bar {
+      max-width: 800px;
+      height: 400px;
+    }
+
+    .chart-container-donut {
+      max-width: 400px;
+      height: 350px;
+    }
+
+    .chart-container-line {
+      max-width: 1000px;
+      height: 400px;
+    }
+
+    .chart-container-horizontal-bar {
+      max-width: 1000px;
+      height: 450px;
+    }
+
+    .stat-card {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #073B4C;
+    }
+
+    .stat-label {
+      font-size: 1.125rem;
+      color: #118AB2;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+
+  <div class="container mx-auto p-4 md:p-8">
+
+    <header class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-[#073B4C] mb-4">Voice of the Customer</h1>
+      <p class="text-xl md:text-2xl text-[#118AB2]">An Infographic on Banking Sentiment & Strategy</p>
+    </header>
+
+    <main class="space-y-12">
+
+      <section id="kpis" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+        <h2 class="text-3xl font-bold text-center text-[#073B4C] mb-8">The Overall Picture: A Polarized Profile</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+
+          <div class="md:col-span-1 space-y-6">
+            <div class="stat-card">
+              <span class="stat-number">22,000+</span>
+              <span class="stat-label">Total Reviews Analyzed</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number">3.92</span>
+              <span class="stat-label">Overall Avg. Rating</span>
+            </div>
+          </div>
+
+          <div class="md:col-span-2">
+            <p class="text-lg text-gray-700 mb-4 text-center">
+              Analysis reveals a highly polarized customer base. While the average rating appears neutral, the reality
+              is a significant divide between delighted advocates and dissatisfied clients, with a concerningly high
+              volume of negative feedback.
+            </p>
+            <div class="chart-container chart-container-donut">
+              <canvas id="sentimentDonutChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="distribution" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+        <h2 class="text-3xl font-bold text-center text-[#073B4C] mb-4">The Great Divide: Star Rating Distribution</h2>
+        <p class="text-lg text-gray-700 mb-8 max-w-3xl mx-auto text-center">
+          The polarization is clear when viewing the raw star counts. The volume of 1-star negative reviews (7,000)
+          outnumbers the entire neutral (3 & 4-star) category (6,000). This indicates that service failures are a
+          critical issue, not a minor one.
+        </p>
+        <div class="chart-container chart-container-bar">
+          <canvas id="starBarChart"></canvas>
+        </div>
+      </section>
+
+      <section id="trends" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+        <h2 class="text-3xl font-bold text-center text-[#073B4C] mb-4">The Crisis Point: Sentiment Over Time</h2>
+        <p class="text-lg text-gray-700 mb-8 max-w-3xl mx-auto text-center">
+          Plotting the average monthly sentiment reveals a catastrophic service failure event in **October 2017**. This
+          single data point provides a clear mandate for investigation, correlating this dip with internal policy
+          changes or app outages.
+        </p>
+        <div class="chart-container chart-container-line">
+          <canvas id="timeLineChart"></canvas>
+        </div>
+      </section>
+
+      <section id="topics" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+        <h2 class="text-3xl font-bold text-center text-[#073B4C] mb-4">The Root Cause: What Drives Customer Sentiment?
+        </h2>
+        <p class="text-lg text-gray-700 mb-8 max-w-3xl mx-auto text-center">
+          Topic Modeling (NMF) was used to cluster all 22,000+ reviews into 6 distinct themes. By calculating the
+          average star rating for each theme, we can move from *what* customers say to *which part* of the business is
+          the biggest risk and biggest strength.
+        </p>
+        <div class="chart-container chart-container-horizontal-bar">
+          <canvas id="topicBarChart"></canvas>
+        </div>
+      </section>
+
+      <section id="keywords" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+        <h2 class="text-3xl font-bold text-center text-[#073B4C] mb-8">From Themes to Talking Points</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <div class="border-4 border-[#FF6B6B] rounded-lg p-6 bg-red-50">
+            <h3 class="text-2xl font-bold text-[#073B4C] mb-4">Key Pain Points (Topic 1)</h3>
+            <p class="text-gray-700 mb-4">These are the high-importance phrases (N-Grams) from the lowest-rated topic,
+              "Fees & Unexpected Charges."</p>
+            <ul class="list-disc list-inside space-y-2 text-lg text-gray-800">
+              <li>account</li>
+              <li>money</li>
+              <li>bank card</li>
+              <li>unexpected fee</li>
+              <li>days to transfer</li>
+              <li>get my money</li>
+              <li>no response</li>
+            </ul>
+          </div>
+
+          <div class="border-4 border-[#06D6A0] rounded-lg p-6 bg-green-50">
+            <h3 class="text-2xl font-bold text-[#073B4C] mb-4">Key Strengths (Topic 3)</h3>
+            <p class="text-gray-700 mb-4">These are the high-importance phrases from the highest-rated topic, "Account
+              Transfers & Funds Access."</p>
+            <ul class="list-disc list-inside space-y-2 text-lg text-gray-800">
+              <li>love this app</li>
+              <li>awesome service</li>
+              <li>early direct deposit</li>
+              <li>paid early</li>
+              <li>fast deposit</li>
+              <li>easy transfer</li>
+              <li>best bank</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="playbooks">
+        <h2 class="text-3xl font-bold text-center text-[#073B4C] mb-8">Actionable RM Playbooks</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+            <h3 class="text-2xl font-bold text-[#FF6B6B] mb-3">1. Service Recovery</h3>
+            <p class="text-gray-600 mb-4 flex-grow">Reactive playbook to mitigate churn from the 2.63-star "Fees" topic.
+            </p>
+            <div class="bg-gray-50 rounded p-4">
+              <strong class="text-[#073B4C]">Trigger:</strong> Unexpected Fee Charged
+              <p class="text-gray-700 mt-1"><strong>Action:</strong> Proactive RM call to waive the fee and educate on
+                avoidance options.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+            <h3 class="text-2xl font-bold text-[#FFD166] mb-3">2. Proactive Retention</h3>
+            <p class="text-gray-600 mb-4 flex-grow">Conversion playbook to fix friction from the 4.31-star "Login/Setup"
+              topic.</p>
+            <div class="bg-gray-50 rounded p-4">
+              <strong class="text-[#073B4C]">Trigger:</strong> New Account Flag (30 days)
+              <p class="text-gray-700 mt-1"><strong>Action:</strong> "White Glove" check-in call to walk client through
+                app verification steps.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+            <h3 class="text-2xl font-bold text-[#06D6A0] mb-3">3. Needs-Based Cross-Sell</h3>
+            <p class="text-gray-600 mb-4 flex-grow">Growth playbook to leverage the 4.86-star "Transfers & Access"
+              topic.</p>
+            <div class="bg-gray-50 rounded p-4">
+              <strong class="text-[#073B4C]">Trigger:</strong> 5-Star Review (mentions "early pay")
+              <p class="text-gray-700 mt-1"><strong>Action:</strong> "Product Bridge" call to link their love of app
+                *speed* to a new, *simple* investment product.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    (function () {
+
+      const tooltipTitleCallback = (tooltipItems) => {
+        const item = tooltipItems[0];
+        let label = item.chart.data.labels[item.dataIndex];
+        if (Array.isArray(label)) {
+          return label.join(' ');
+        } else {
+          return label;
+        }
+      };
+
+      const sharedTooltipOptions = {
+        plugins: {
+          tooltip: {
+            callbacks: {
+              title: tooltipTitleCallback
+            }
+          }
+        }
+      };
+
+      const wrapLabels = (label, maxWidth) => {
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        words.forEach(word => {
+          if ((currentLine + ' ' + word).trim().length > maxWidth && currentLine.length > 0) {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = (currentLine + ' ' + word).trim();
+          }
+        });
+        lines.push(currentLine);
+        return lines;
+      };
+
+      const palette = {
+        red: '#FF6B6B',
+        yellow: '#FFD166',
+        green: '#06D6A0',
+        blue: '#118AB2',
+        darkBlue: '#073B4C',
+        lightGreen: '#B4F8C8',
+        lightBlue: '#A0E7E5'
+      };
+
+      const sentimentDonutCtx = document.getElementById('sentimentDonutChart').getContext('2d');
+      new Chart(sentimentDonutCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Negative (1-2 Stars)', 'Neutral (3-4 Stars)', 'Positive (5 Stars)'],
+          datasets: [{
+            label: 'Sentiment Breakdown',
+            data: [32, 27, 41],
+            backgroundColor: [
+              palette.red,
+              palette.yellow,
+              palette.green
+            ],
+            borderColor: '#FFFFFF',
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+            },
+            title: {
+              display: true,
+              text: 'Sentiment Breakdown by Category'
+            },
+            tooltip: sharedTooltipOptions.plugins.tooltip
+          }
+        }
+      });
+
+      const starBarCtx = document.getElementById('starBarChart').getContext('2d');
+      new Chart(starBarCtx, {
+        type: 'bar',
+        data: {
+          labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+          datasets: [{
+            label: 'Number of Reviews',
+            data: [5500, 1500, 2000, 4000, 9000],
+            backgroundColor: [
+              palette.red,
+              '#FFA07A',
+              palette.yellow,
+              palette.lightGreen,
+              palette.green
+            ],
+            borderColor: palette.darkBlue,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'x',
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: sharedTooltipOptions.plugins.tooltip
+          }
+        }
+      });
+
+      const timeLineCtx = document.getElementById('timeLineChart').getContext('2d');
+      new Chart(timeLineCtx, {
+        type: 'line',
+        data: {
+          labels: ['2017-01', '2017-02', '2017-03', '2017-04', '2017-05', '2017-06', '2017-07', '2017-08', '2017-09', '2017-10 (DIP)', '2017-11', '2017-12'],
+          datasets: [{
+            label: 'Average Star Rating',
+            data: [4.2, 4.3, 4.1, 4.4, 4.3, 4.0, 4.1, 4.2, 4.1, 3.1, 4.0, 4.2],
+            fill: false,
+            borderColor: palette.blue,
+            backgroundColor: palette.blue,
+            tension: 0.1,
+            pointBackgroundColor: (context) => {
+              return context.dataIndex === 9 ? palette.red : palette.blue;
+            },
+            pointRadius: (context) => {
+              return context.dataIndex === 9 ? 8 : 4;
+            },
+            pointBorderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 3.0,
+              max: 4.5
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: sharedTooltipOptions.plugins.tooltip
+          }
+        }
+      });
+
+      const topicBarCtx = document.getElementById('topicBarChart').getContext('2d');
+      new Chart(topicBarCtx, {
+        type: 'bar',
+        data: {
+          labels: [
+            wrapLabels('Fees & Unexpected Charges', 16),
+            wrapLabels('Login, Verification, & Account Setup', 16),
+            wrapLabels('Mobile App Experience & Usability', 16),
+            wrapLabels('Customer Service & Communication', 16),
+            wrapLabels('General Appreciation (Positive)', 16),
+            wrapLabels('Account Transfers & Funds Access', 16)
+          ],
+          datasets: [{
+            label: 'Average Star Rating',
+            data: [2.63, 4.31, 4.38, 4.51, 4.74, 4.86],
+            backgroundColor: [
+              palette.red,
+              palette.yellow,
+              palette.lightBlue,
+              palette.blue,
+              palette.lightGreen,
+              palette.green
+            ],
+            borderColor: palette.darkBlue,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          scales: {
+            x: {
+              beginAtZero: false,
+              min: 2.5,
+              max: 5.0
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'Average Star Rating by Customer Topic'
+            },
+            tooltip: sharedTooltipOptions.plugins.tooltip
+          }
+        }
+      });
+
+    })();
+    
+  </script>
+</body>
+
+</html>
